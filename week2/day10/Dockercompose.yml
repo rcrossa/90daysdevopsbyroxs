@@ -1,0 +1,13 @@
+# docker run -d --name hora-container2 ubuntu bash -c 'while true; do date +"%T" >> hora.txt; sleep 1; done'
+
+services:
+  hora-container2:
+    image: ubuntu:latest
+    command: bash -c 'while true; do date +"%T" >> mensaje.txt; sleep 5; done'
+    container_name: hora-container2
+    volumes:
+      - ./sharedrive:/shared
+
+volumes:
+  hora-data:
+    driver: local

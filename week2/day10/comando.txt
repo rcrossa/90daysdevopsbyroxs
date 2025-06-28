@@ -1,0 +1,3 @@
+# Copia archivos desde el contenedor hacia el host
+docker cp hora-container2:/mensaje.txt ./sharedrive/mensaje.txt
+
