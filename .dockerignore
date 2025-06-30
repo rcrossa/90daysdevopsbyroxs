@@ -27,3 +27,6 @@
 LICENSE
 README.md
 CODE
+.git
+node_modules
+*.log
