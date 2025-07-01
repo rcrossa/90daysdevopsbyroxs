@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node-Mongo App</title>
+</head>
+<body>
+    <div id="app">
+        <h2>¡Bienvenido a la aplicación Node-Mongo!</h2>
+        <p style="color: #666;">Frontend corriendo en el puerto: 5173</p>
+        <button onclick="testAPI()">Probar conexión con API</button>
+        <div id="api-response" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        async function testAPI() {
+            const responseDiv = document.getElementById('api-response');
+            
+            try {
+                const response = await fetch('http://localhost:3000/');
+                const data = await response.text();
+                responseDiv.innerHTML = `<p style="color: green;">✅ API Response: ${data}</p>`;
+            } catch (error) {
+                responseDiv.innerHTML = `<p style="color: red;">❌ Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

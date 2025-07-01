@@ -1,0 +1,77 @@
+# docker-compose.yml - WordPress Moderno con Docker Compose V2+
+services:
+  wordpress:
+    image: wordpress:php8.2-apache
+    container_name: wp-web
+    resources:
+      limits:
+        cpus: '1.0'
+        memory: 512M
+      reservations:
+        cpus: '0.5'
+        memory: 256M
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+    volumes:
+      - wp_data:/var/www/html
+      - ./wp-content:/var/www/html/wp-content  # Para desarrollo personalizado
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - wp_network
+
+  db:
+    image: mariadb:11.3
+    container_name: wp-db
+    resources:
+      limits:
+        cpus: '1.0'
+        memory: 512M
+      reservations:
+        cpus: '0.5'
+        memory: 256M
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - wp_network
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: wp-admin
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: ${WORDPRESS_DB_HOST}
+      PMA_USER: ${WORDPRESS_DB_USER}
+      PMA_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+    depends_on:
+      - db
+    networks:
+      - wp_network
+
+volumes:
+  wp_data:
+  db_data:
+
+networks:
+  wp_network:
+    driver: bridge
