@@ -1,0 +1,67 @@
+services:
+    vote:
+        build:
+            context: ./roxs-voting-app/vote
+            dockerfile: Dockerfile
+        container_name: vote
+        ports:
+            - "80:80"
+        environment:
+            - REDIS_HOST=${REDIS_HOST}
+            - DATABASE_HOST=${DATABASE_HOST}
+            - DATABASE_USER=${DATABASE_USER}
+            - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+            - DATABASE_NAME=${DATABASE_NAME}
+        depends_on:
+            - redis
+
+    result:
+        build:
+            context: ./roxs-voting-app/result
+            dockerfile: Dockerfile
+        container_name: result
+        ports:
+            - "3000:3000"
+        environment:
+            - APP_PORT=3000
+            - DATABASE_HOST=${DATABASE_HOST}
+            - DATABASE_USER=${DATABASE_USER}
+            - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+            - DATABASE_NAME=${DATABASE_NAME}
+        depends_on:
+            - redis
+            - database
+
+    worker:
+        build:
+            context: ./roxs-voting-app/worker
+            dockerfile: Dockerfile
+        container_name: worker
+        environment:
+            - REDIS_HOST=${REDIS_HOST}
+            - DATABASE_HOST=${DATABASE_HOST}
+            - DATABASE_USER=${DATABASE_USER}
+            - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+            - DATABASE_NAME=${DATABASE_NAME}
+        depends_on:
+            - redis
+            - database
+
+    redis:
+        image: "redis:alpine"
+        ports:
+            - "6379:6379"
+
+    database:
+        image: "postgres:15-alpine"
+        environment:
+            POSTGRES_USER: ${DATABASE_USER}
+            POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+            POSTGRES_DB: ${DATABASE_NAME}
+        ports:
+            - "5432:5432"
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+
+volumes:
+    pgdata:
