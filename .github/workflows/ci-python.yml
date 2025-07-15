@@ -20,18 +20,22 @@ jobs:
 
           - name: Install dependencies
             run: |
+              cd week3/day17/mi-app-python
               pip install -r requirements.txt
 
           - name: Run tests
             run: |
+              cd week3/day17/mi-app-python
               pytest tests/ -v
 
           - name: Run with coverage
             run: |
+              cd week3/day17/mi-app-python
               pytest --cov=app --cov-report=term --cov-report=html
 
           - name: Check app running
             run: |
+              cd week3/day17/mi-app-python
               timeout 10 python app.py &
               sleep 5
               curl -f http://localhost:5000/health
@@ -40,4 +44,4 @@ jobs:
             uses: actions/upload-artifact@v4
             with:
               name: coverage-report
-              path: htmlcov/
+              path: week3/day17/mi-app-python/htmlcov/
